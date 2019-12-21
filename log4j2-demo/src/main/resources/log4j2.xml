@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL log4j2日志等级 -->
+
+<configuration status="INFO" monitorInterval="30">
+    <Properties>
+        <Property name="filePath">${sys:catalina.home}/logs</Property>
+    </Properties>
+    <appenders>
+        <console name="Console" target="SYSTEM_OUT">
+            <Filters>
+                <!-- 过滤器 仅放行DEBUG及以上级别的日志 （OFF，FATAL，ERROR，WARN，INFO）	 -->
+                <!-- 如果不是要调试项目，请不要将日志等级调到DEBUG及以下。	-->
+                <ThresholdFilter level="INFO"/>
+                <!-- 过滤器 仅放行FATAL以下级别的日志 （INFO，DEBUG，TRACE，ALL）	 -->
+
+                <ThresholdFilter level="FATAL" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} [%p] - %l - %m%n"/>
+        </console>
+
+        <!-- 将所有日志输出到 Redirect_Logger.log 并设置不累加 -->
+        <File name="log" fileName="${filePath}/Redirect_logger.log" append="false">
+            <Filters>
+                <!-- 过滤器 仅放行DEBUG及以上级别的日志 （OFF，FATAL，ERROR，WARN，INFO） -->
+                <ThresholdFilter level="DEBUG"/>
+                <!-- 过滤器 仅放行FATAL以下级别的日志 （INFO，DEBUG，TRACE，ALL） -->
+                <ThresholdFilter level="FATAL" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} [%p] - %l - %m%n"/>
+        </File>
+        <!-- 这个会打印出所有的info及以下级别的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档-->
+        <RollingFile name="RollingFileInfo" fileName="${sys:catalina.home}/logs/info.log"
+                     filePattern="${sys:catalina.home}/logs/info-%d{yyyy-MM-dd}-%i.log">
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <Filters>
+                <!-- 过滤器 仅放行INFO及以上级别的日志 （OFF，FATAL，ERROR，WARN，INFO） -->
+                <ThresholdFilter level="INFO"/>
+                <!-- 过滤器 仅放行WARN以下级别的日志 （INFO，DEBUG，TRACE，ALL） -->
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <!-- 格式化文件输出的日志格式 -->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} [%p] - %l - %m%n" charset="UTF-8"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="24" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="1KB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="6"/>
+        </RollingFile>
+
+        <RollingRandomAccessFile name="RollingAccessFileInfo" fileName="${sys:catalina.home}/logs/info-access.log"
+                     filePattern="${sys:catalina.home}/logs/info-%d{yyyy-MM-dd}-%i-access.log">
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <Filters>
+                <!-- 过滤器 仅放行INFO及以上级别的日志 （OFF，FATAL，ERROR，WARN，INFO） -->
+                <ThresholdFilter level="INFO"/>
+                <!-- 过滤器 仅放行WARN以下级别的日志 （INFO，DEBUG，TRACE，ALL） -->
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <!-- 格式化文件输出的日志格式 -->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} [%p] - %l - %m%n" charset="UTF-8"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="24" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="2KB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="3"/>
+        </RollingRandomAccessFile>
+
+    </appenders>
+
+    <loggers>
+        <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+        <logger name="org.springframework" level="INFO"></logger>
+<!--        <logger name="org.mybatis" level="INFO"></logger>-->
+        <root level="ALL">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="log"/>
+            <appender-ref ref="RollingFileInfo"/>
+            <appender-ref ref="RollingAccessFileInfo"/>
+        </root>
+    </loggers>
+</configuration>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--log4j 默认配置-->
+<!-- OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL log4j2日志等级 -->
+<Configuration status="WARN" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <xi:include href="log4j2-appender.xml"></xi:include>
+    <xi:include href="log4j2-logger.xml"></xi:include>
+</Configuration>
