@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds" debug="false" packagingData="true">
+    <!-- 项目名称 -->
+    <contextName>myApp1 contextName</contextName>
+    <!-- 属性 -->
+    <property name="USER_HOME" value="./log"/>
+
+    <!-- 属性文件:在properties文件中找到对应的配置项 -->
+    <springProperty scope="context" name="logging.path"  source="logging.path"/>
+
+    <!-- Insert the current time formatted as "yyyyMMdd'T'HHmmss" under
+       the key "bySecond" into the logger context. This value will be
+       available to all subsequent configuration elements. -->
+    <timestamp key="bySecond" datePattern="yyyyMMdd" timeReference="contextBirth"/>
+
+    <!-- appender很重要，一个配置文件会有多个appender -->
+    <!-- ConsoleApperder意思是从console中打印出来 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 过滤器，一个appender可以有多个 -->
+        <!-- 阈值过滤，就是log行为级别过滤，debug及debug以上的信息会被打印出来 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>debug</level>
+        </filter>
+
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <!-- encoder编码规则 -->
+        <encoder>
+            <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+            <!--<pattern>%d %contextName %msg%n</pattern>-->
+            <!-- pattern模式 %d时间 %thread 线程名 %level行为级别 %logger logger名称 %method 方法名称 %message 调用方法的入参消息 -->
+            <pattern>%-4d [%thread] %highlight%-5level %cyan%logger.%-10method - %message%n</pattern>
+        </encoder>
+    </appender>
+
+    <springProfile name="staging">
+        <!-- configuration to be enabled when the "staging" profile is active -->
+    </springProfile>
+
+    <springProfile name="dev, staging">
+        <!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
+    </springProfile>
+
+    <springProfile name="!production">
+        <!-- configuration to be enabled when the "production" profile is not active -->
+    </springProfile>
+
+    <!-- Strictly speaking, the level attribute is not necessary since -->
+    <!-- the level of the root level is set to DEBUG by default.       -->
+    <!-- 这就是上边logger没有管到的情况下 root默认接管所有logger -->
+    <root level="debug">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
