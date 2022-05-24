@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" schema="Log4J-V2.0.xsd"
+    monitorInterval="600"> <!--日志级别：TRACE < DEBUG < INFO < WARN < ERROR < FATAL-->
+    <Properties> <!-- 配置日志文件输出目录,此处为项目根目录下的logs文件夹 -->
+        <Property name="LOG_HOME">logs</Property>
+        <property name="FILE_NAME">servicestation-pick-provider</property>
+        <property name="ROCKETMQ_HOME">rocketmq_logs</property>
+        <property name="XSYX_SERVICESTATION_LAYOUT">[%d{yyyy-MM-dd'T'HH:mm:ss.SSSZZ}] [%level{length=5}] [%thread-%tid]
+            [%logger] [%X{hostName}] [%X{ip}] [%X{applicationName}] [%X{traceId}] [%X{spanId}] [%X{eventId}]
+            [%F,%L,%C,%M] [%m] ## '%ex'%n
+        </property>
+    </Properties>
+    <Appenders>
+        <Console name="XSYX_SERVICESTATION_CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="${XSYX_SERVICESTATION_LAYOUT}"/>
+        </Console>
+        <RollingRandomAccessFile name="appAppender" fileName="${LOG_HOME}/app-${FILE_NAME}.log"
+            filePattern="${LOG_HOME}/${FILE_NAME}-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${XSYX_SERVICESTATION_LAYOUT}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="500MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingRandomAccessFile>
+        <RollingFile name="RocketmqClientAppender" fileName="${ROCKETMQ_HOME}/rocketmq_client.log"
+            filePattern="${ROCKETMQ_HOME}/rocketmq_client-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d{yyy-MM-dd HH\:mm\:ss,SSS} %p %c{1}(%L) - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="500MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.apache" level="WARN" additivity="false">
+            <Appender-Ref ref="XSYX_SERVICESTATION_CONSOLE"/>
+        </Logger>
+        <Root level="info">
+            <Appender-Ref ref="XSYX_SERVICESTATION_CONSOLE"/>
+        </Root>
+    </Loggers>
+</Configuration>
